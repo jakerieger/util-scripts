@@ -1,13 +1,18 @@
 #!/bin/bash
 
-# [!] This script requires "CODE_DIR" to be defined as an environment variable.
+if [ -z "$CODE_DIR" ]; then
+    echo "CODE_DIR is not set"
+    exit
+fi
 
 TEMP_DIR=$CODE_DIR/temp
 
 if [ -d "$TEMP_DIR" ]; then
-    read -p "This will erase everything in $TEMP_DIR. Continue? (Y/n): " response
+    echo "This will erase everything in $TEMP_DIR."
+    read -p "Continue? (Y/n): " response
     
     if [[ "$response" == "n" ]]; then
+        echo "Exiting."
         exit
     fi
 fi
