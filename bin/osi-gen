@@ -3,11 +3,10 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo -e "${GREEN}OSS License Generator${NC}\n"
+echo -e "${GREEN}OSI License Generator${NC}\n"
 
-# Display license options
 echo "Please select a license:"
 echo "1) ISC"
 echo "2) MIT"
@@ -17,7 +16,6 @@ echo ""
 
 read -p "Enter your choice (1-4): " choice
 
-# Validate input
 if [[ ! "$choice" =~ ^[1-4]$ ]]; then
     echo -e "${RED}Invalid choice. Please run the script again and select 1-4.${NC}"
     exit 1

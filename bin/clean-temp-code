@@ -1,6 +1,16 @@
 #!/bin/bash
 
-TEMP_DIR=/home/jr/Code/temp
+# [!] This script requires "CODE_DIR" to be defined as an environment variable.
+
+TEMP_DIR=$CODE_DIR/temp
+
+if [ -d "$TEMP_DIR" ]; then
+    read -p "This will erase everything in $TEMP_DIR. Continue? (Y/n): " response
+    
+    if [[ "$response" == "n" ]]; then
+        exit
+    fi
+fi
 
 rm -rf $TEMP_DIR
 mkdir $TEMP_DIR
