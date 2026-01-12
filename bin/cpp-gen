@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# This script is used for creating new .cpp/.hpp source files
+# Usage: cpp-gen <name>
+
+FILE_NAME=$1
+
+if [ -z "$FILE_NAME" ]; then
+    echo "[`basename $0`] No filename was provided."
+    exit 1
+fi
+
+FILE_NAME_UPPER="${FILE_NAME^^}"
+
+# Create header file
+cat > "$FILE_NAME.hpp" << EOF
+#ifndef ${FILE_NAME_UPPER}_HPP
+#define ${FILE_NAME_UPPER}_HPP
+
+#endif
+EOF
+
+# Create CPP file
+cat > "$FILE_NAME.c" << EOF
+#include "${FILE_NAME}.hpp"
+EOF
+
