@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# This script is used to completely wipe a drive. It should be used with caution.
+# Needs to be run as root.
+
+if (( $EUID != 0 )); then
+    # If not root, attempt re-executing as root
+    exec sudo "$0" "$@"
+    # Return exit code from re-execution
+    exit $?
+fi
+
+DRIVE_NAME=$1
+
+if [ -z "$DRIVE_NAME" ]; then
+    echo "[`basename $0`] No drive was provided. Run 'lsblk' to see a list of available drives. Do not provide a partition."
+    exit 1
+fi
+
+# Check if drive is currently mounted and unmount it if so
+check_and_unmount_drive() {
+    # Remove /dev/ prefix if present for consistency
+    local drive=$(basename ${DRIVE_NAME})
+    local mounted=$(lsblk -ln -o NAME,MOUNTPOINT "/dev/${drive}" | awk '$2 != "" {print $1}')
+    
+    if [ -n "${mounted}" ]; then
+        echo "[`basename $0`] Found mounted partitions from ${DRIVE}:"
+        for part in ${mounted}; do
+            local mountpoint=$(lsblk -ln -o MOUNTPOINT "/dev/${part}" | head -1)
+            echo "  /dev/${part} mounted at ${mountpoint}"
+            echo "[`basename $0`] Unmounting /dev/${part}..."
+            umount "/dev/${part}" 2>&1
+            if [ $? -eq 0 ]; then
+                echo "  [`basename $0`] ✓ Successfully unmounted"
+            else
+                echo "  [`basename $0`] ✗ Failed to unmount - may need 'umount -f' or check for processes using it"
+                exit 1
+            fi
+        done
+    fi
+}
+
+wipe_drive() {
+    if command -v shred > /dev/null 2>&1; then
+        # Attempt to use 'shred' if it's available
+        echo "[`basename $0`] Found 'shred'. Using that for wipe."
+        shred -v -n1 -z $DRIVE_NAME
+    else
+        # Fall back to 'dd' if 'shred' isn't available
+        echo "[`basename $0`] Did not find 'shred'. Falling back to 'dd' for wipe."
+        dd if=/dev/zero of=$DRIVE_NAME bs=1M status=progress
+    fi
+
+    if [ $? -ne 0 ]; then
+        echo "[`basename $0`] Failed to wipe drive '$DRIVE_NAME'"
+        exit $?
+    fi
+}
+
+_start=`date +%s.%N`
+
+check_and_unmount_drive
+wipe_drive
+
+_end=`date +%s.%N`
+_runtime=$(echo "$_end - $_start" | bc -l)
+
+echo "[nuke-drive] === Finished nuking drive ==="
+echo "[nuke-drive] Took ${_runtime} seconds"
+exit 0

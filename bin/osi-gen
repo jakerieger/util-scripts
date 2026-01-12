@@ -17,19 +17,19 @@ echo ""
 read -p "Enter your choice (1-4): " choice
 
 if [[ ! "$choice" =~ ^[1-4]$ ]]; then
-    echo -e "${RED}Invalid choice. Please run the script again and select 1-4.${NC}"
+    echo -e "${RED}[`basename $0`] Invalid choice. Please run the script again and select 1-4.${NC}"
     exit 1
 fi
 
 current_year=$(date +%Y)
 
-read -p "Enter copyright year [${current_year}]: " year
+read -p "[`basename $0`] Enter copyright year [${current_year}]: " year
 year=${year:-$current_year}
 
 if [[ "$choice" != "4" ]]; then
-    read -p "Enter your name or organization: " name
+    read -p "[`basename $0`] Enter your name or organization: " name
     if [[ -z "$name" ]]; then
-        echo -e "${RED}Name/organization is required for this license.${NC}"
+        echo -e "${RED}[`basename $0`] Name/organization is required for this license.${NC}"
         exit 1
     fi
 fi
@@ -310,8 +310,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org/>
 EOF
-        echo -e "${GREEN}Unlicense created successfully!${NC}"
+        echo -e "${GREEN}[`basename $0`] Unlicense created successfully!${NC}"
         ;;
 esac
 
-echo -e "\nLICENSE file created in: ${YELLOW}$(pwd)/LICENSE${NC}"
+echo -e "\n[`basename $0`] LICENSE file created in: ${YELLOW}$(pwd)/LICENSE${NC}"
